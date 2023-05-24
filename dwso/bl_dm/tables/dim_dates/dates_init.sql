@@ -1,0 +1,32 @@
+INSERT INTO bl_dim.dim_dates (
+  date_id,
+  full_date,
+  day_name,
+  day_of_week,
+  day_of_month,
+  day_of_quarter,
+  day_of_year,
+  week_of_month,
+  week_of_year,
+  month_actual,
+  month_name,
+  month_name_abbreviated,
+  quarter_actual,
+  quarter_name,
+  year_actual,
+  first_day_of_week,
+  last_day_of_week,
+  first_day_of_month,
+  last_day_of_month,
+  first_day_of_quarter,
+  last_day_of_quarter,
+  first_day_of_year,
+  last_day_of_year,
+  mmyyyy,
+  mmddyyyy,
+  weekend_indr
+)
+VALUES (-1, '01/01/1991'::DATE, 'N/A', -1, -1, -1, -1, -1, -1, -1, 'N/A', 'N/A', -1, 'N/A', -1,
+	     '01/01/1991'::DATE, '01/01/1991'::DATE, '01/01/1991'::DATE, '01/01/1991'::DATE, '01/01/1991'::DATE,
+	      '01/01/1991'::DATE, '01/01/1991'::DATE, '01/01/1991'::DATE, 'N/A', 'N/A', 'N/A')
+ON CONFLICT ON CONSTRAINT dim_dates_pkey DO NOTHING;

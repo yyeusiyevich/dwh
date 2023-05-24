@@ -1,0 +1,27 @@
+CREATE TABLE IF NOT EXISTS bl_dim.dim_stores
+  (
+     store_surr_id     			INTEGER PRIMARY KEY,
+     store_id 					INTEGER NOT NULL,
+     name  		    			TEXT NOT NULL,
+     start_date					DATE NOT NULL,
+     end_date     				DATE NOT NULL,
+     is_active					TEXT NOT NULL,
+     contact_phone				TEXT NOT NULL,
+     contact_email				TEXT NOT NULL,
+	 region						TEXT NOT NULL,
+	 county_code				TEXT NOT NULL,
+	 county_name				TEXT NOT NULL,
+	 postal_code				TEXT NOT NULL,
+	 city						TEXT NOT NULL,
+	 address					TEXT NOT NULL,
+     payment_type_pref			TEXT NOT NULL,
+     membership_flag			TEXT NOT NULL,    
+     opt_in_flag				TEXT NOT NULL, 
+     curr_emp_first_name		TEXT NOT NULL,
+     curr_emp_last_name			TEXT NOT NULL,
+     curr_emp_full_name			TEXT NOT NULL,
+     curr_emp_phone				TEXT NOT NULL,
+     curr_emp_email				TEXT NOT NULL,
+     insert_dt              	TIMESTAMP WITH TIME ZONE NOT NULL,
+     update_dt              	TIMESTAMP WITH TIME ZONE NOT NULL
+  ); 

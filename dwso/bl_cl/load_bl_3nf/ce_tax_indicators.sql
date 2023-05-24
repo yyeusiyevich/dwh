@@ -1,0 +1,84 @@
+CREATE OR REPLACE PROCEDURE bl_cl.ce_tax_indicators_insertion()
+
+LANGUAGE plpgsql 
+AS $$
+
+DECLARE
+  schema_name   TEXT := 'bl_3nf';
+  table_name    TEXT := 'ce_tax_indicators';
+  command_name  TEXT := 'insert';
+  rows_affected INTEGER := 0;
+  error_type    TEXT := '';
+  output_message TEXT := '';
+
+BEGIN 
+
+WITH inserted_data (tax_indicator_id, 
+                    source_system, 
+                    source_entity, 
+                    tax_type, 
+                    insert_dt, 
+                    update_dt) AS (
+		SELECT  COALESCE(mp.tax_indicator_src_id, 'N/A'),
+				mp.source_system AS source_system,
+				mp.source_table AS source_table,
+				COALESCE(mp.tax_type, 'N/A'), 
+				CURRENT_TIMESTAMP,
+				CURRENT_TIMESTAMP
+		FROM bl_cl.map_tax_indicators AS mp    
+                                  )    
+MERGE INTO bl_3nf.ce_tax_indicators AS nf
+USING inserted_data ON UPPER(nf.tax_indicator_src_id) = UPPER(COALESCE(inserted_data.tax_indicator_id, 'N/A')) AND
+                       nf.source_system = inserted_data.source_system AND
+                       nf.source_entity = inserted_data.source_entity	
+WHEN MATCHED AND UPPER(inserted_data.tax_type) != UPPER(nf.tax_type)
+THEN
+        UPDATE
+        SET tax_type = inserted_data.tax_type,
+            update_dt = CURRENT_TIMESTAMP
+WHEN NOT MATCHED 
+THEN
+        INSERT
+            (tax_indicator_id,
+             tax_indicator_src_id,
+             source_system,
+             source_entity,
+             tax_type, 
+             insert_dt, 
+             update_dt)
+         VALUES 
+         	(NEXTVAL('bl_3nf.ce_tax_indicators_seq'),
+         	inserted_data.tax_indicator_id, 
+            inserted_data.source_system, 
+            inserted_data.source_entity, 
+            inserted_data.tax_type, 
+            inserted_data.insert_dt, 
+            inserted_data.update_dt);                                                                 
+
+GET DIAGNOSTICS rows_affected = row_count;
+
+RAISE NOTICE '% row(s) inserted', rows_affected;
+output_message = 'Success';
+
+CALL bl_cl.logging_insertion(schema_name, 
+							 table_name,
+							 command_name,
+							 rows_affected,
+							 error_type,
+							 output_message);
+
+EXCEPTION
+WHEN OTHERS THEN
+     GET stacked DIAGNOSTICS error_type = pg_exception_context,
+                             output_message = message_text;
+
+RAISE NOTICE 'Error: % %', error_type, output_message;
+
+CALL bl_cl.logging_insertion(schema_name, 
+							 table_name,
+							 command_name,
+							 rows_affected,
+							 error_type,
+							 output_message);
+END;
+$$;                   		 
